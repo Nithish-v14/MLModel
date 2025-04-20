@@ -1,9 +1,30 @@
 import streamlit as st
 import pickle
 import numpy as np
+import requests
+import os
+
+# Google Drive file ID for the model file
+file_id = '1X8ZcS-5WC55i1RXlNxmUwuyoWvJL-9Bs'  # Replace with your actual file ID
+model_url = f'https://drive.google.com/uc?id={file_id}'  # Direct file URL for download
+model_path = 'linear_regression_model.pkl'
+
+# Function to download the model from Google Drive
+def download_model(url, model_path):
+    with requests.get(url, stream=True) as r:
+        if r.status_code == 200:
+            with open(model_path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192): 
+                    f.write(chunk)
+        else:
+            st.error("Failed to download the model file")
+
+# Download model if not already downloaded
+if not os.path.exists(model_path):
+    download_model(model_url, model_path)
 
 # Load the saved model
-with open('linear_regression_model.pkl', 'rb') as file:
+with open(model_path, 'rb') as file:
     model = pickle.load(file)
 
 # Title
